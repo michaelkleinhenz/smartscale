@@ -27,7 +27,7 @@ const char* ssid = "ssid";
 const char* password = "password";
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   //setupWifi();
   Serial.println("Booting..");  
   setupOLED();
@@ -42,9 +42,21 @@ static char outstr[15];
 
 void loop() {
   float sensorValue = readScale();
-  //Serial.println(sensorValue);
+  Serial.println(sensorValue);
   dtostrf(sensorValue, 7, 2, outstr);
   displayText(outstr);
-  delay(1000);
+  safeDelay(1000);
   clearOLED();
+  ESP.wdtFeed();
+}
+
+void safeDelay(int ms) {
+    int i;
+    for(i=1;i!=ms;i++) {
+          delay(1);
+          if(i%100 == 0) {
+                  ESP.wdtFeed(); 
+                  yield();
+          }
+    }
 }

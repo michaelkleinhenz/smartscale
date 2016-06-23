@@ -32,7 +32,7 @@ void setupOLED()   {
   // Since the buffer is intialized with an Adafruit splashscreen
   // internally, this will display the splashscreen.
   display.display();
-  delay(1000);
+  safeDelay(1000);
   // Clear the buffer.
   display.clearDisplay();
 }

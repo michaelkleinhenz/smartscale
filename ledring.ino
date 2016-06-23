@@ -61,7 +61,7 @@ void colorWipe(uint32_t c, uint8_t wait) {
   for(uint16_t i=0; i<strip.numPixels(); i++) {
     strip.setPixelColor(i, c);
     strip.show();
-    delay(wait);
+    safeDelay(wait);
   }
 }
 
@@ -73,7 +73,7 @@ void rainbow(uint8_t wait) {
       strip.setPixelColor(i, Wheel((i+j) & 255));
     }
     strip.show();
-    delay(wait);
+    safeDelay(wait);
   }
 }
 
@@ -85,7 +85,7 @@ void rainbowCycle(uint8_t wait) {
       strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
     }
     strip.show();
-    delay(wait);
+    safeDelay(wait);
   }
 }
 
@@ -97,7 +97,7 @@ void theaterChase(uint32_t c, uint8_t wait) {
         strip.setPixelColor(i+q, c);    //turn every third pixel on
       }
       strip.show();
-      delay(wait);
+      safeDelay(wait);
       for (uint16_t i=0; i < strip.numPixels(); i=i+3) {
         strip.setPixelColor(i+q, 0);        //turn every third pixel off
       }
@@ -113,7 +113,7 @@ void theaterChaseRainbow(uint8_t wait) {
         strip.setPixelColor(i+q, Wheel( (i+j) % 255));    //turn every third pixel on
       }
       strip.show();
-      delay(wait);
+      safeDelay(wait);
       for (uint16_t i=0; i < strip.numPixels(); i=i+3) {
         strip.setPixelColor(i+q, 0);        //turn every third pixel off
       }

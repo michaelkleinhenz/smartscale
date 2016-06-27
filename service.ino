@@ -35,7 +35,6 @@ void handleRoot() {
   <body>\
     <h1>Hello from ESP8266!</h1>\
     <p>Uptime: %02d:%02d:%02d</p>\
-    <img src=\"/test.svg\" />\
   </body>\
 </html>",
     hr, min % 60, sec % 60

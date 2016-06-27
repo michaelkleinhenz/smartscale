@@ -30,6 +30,7 @@ void setup() {
   Serial.println("");  
   Serial.println("");  
   
+  setupButtons();
   Serial.println("Booting..");  
   setupOLED();
   Serial.println("OLED initialized..");

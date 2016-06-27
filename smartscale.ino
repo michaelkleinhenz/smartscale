@@ -14,6 +14,7 @@
  *    Adafruit GFX Library        
  *    Adafruit Neopixel
  *    Adafruit SSD 1306
+ *    WifiManager
  * Also, you'll need the ESP8266 integration for Arduino IDE
  * installed (see website for how to do that). You may need
  * to customize some libraries (the SSD 1306 library may need
@@ -22,17 +23,22 @@
  */
 
 #include<stdlib.h>
-
-const char* ssid = "ssid";
-const char* password = "password";
+#include <WiFiManager.h>
 
 void setup() {
   Serial.begin(115200);
-  //setupWifi();
+  Serial.println("");  
+  Serial.println("");  
+  
   Serial.println("Booting..");  
   setupOLED();
   Serial.println("OLED initialized..");
   setupLEDRing();
+  Serial.println("Neopixels initialized..");  
+  ledIndicateConnectToNetwork();
+  setupWifi();
+  Serial.println("Wifi initialized..");
+  setupScale();
   Serial.println("Smart Kitchen Scale ready.");
   ledStandby();
   Serial.println("Entering standby..");
@@ -41,13 +47,14 @@ void setup() {
 static char outstr[15];
 
 void loop() {
-  float sensorValue = readScale();
-  Serial.println(sensorValue);
-  dtostrf(sensorValue, 7, 2, outstr);
+  dtostrf(getScaleValue(), 7, 2, outstr);
   displayText(outstr);
   safeDelay(1000);
   clearOLED();
+  // You have to put a yield() in your main loop to 
+  // allow the underlying operating system to work.
   ESP.wdtFeed();
+  yield();
 }
 
 void safeDelay(int ms) {
@@ -60,3 +67,4 @@ void safeDelay(int ms) {
           }
     }
 }
+

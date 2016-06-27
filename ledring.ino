@@ -40,6 +40,16 @@ void ledIndicateStart() {
   colorWipe(strip.Color(0, 255, 0), 50);  
 }
 
+// indicate connection to network
+void ledIndicateConnectToNetwork() {
+  colorWipe(strip.Color(0, 255, 255), 50);  
+}
+
+// indicate connection to network successful
+void ledIndicateConnectToNetworkSuccessful() {
+  colorWipe(strip.Color(0, 255, 0), 50);  
+}
+
 // sets the LEDs to a color between green (0) and red (100)
 void ledShowProgress(uint8_t percent) {
   uint16_t color = (255 / 100) * percent;

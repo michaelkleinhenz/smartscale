@@ -56,7 +56,7 @@ void setupService() {
   
   server.onNotFound(handleNotFound);
   server.begin();
-  Serial.println("HTTP server started..");
+  Serial.println("HTTP server initialized..");
 }
 
 void loopService(void) {

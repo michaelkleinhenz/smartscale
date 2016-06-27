@@ -1,4 +1,5 @@
 #include <ESP8266WebServer.h>
+#include <ArduinoJson.h>
 
 ESP8266WebServer server ( 80 );
 
@@ -44,12 +45,56 @@ void handleRoot() {
 
 void setupService() {
   server.on("/", handleRoot);
-  server.onNotFound (handleNotFound);
+
+  // REST Service Endpoints follow
+  server.on("/test", HTTP_POST, []() {
+    // no arguments, return error
+    if(server.args() == 0) return server.send(500, "text/plain", "BAD ARGS");
+    // call payload function
+    testfunc();
+  });
+  
+  server.onNotFound(handleNotFound);
   server.begin();
-  Serial.println ("HTTP server started");
+  Serial.println("HTTP server started..");
 }
 
 void loopService(void) {
   server.handleClient();
+}
+
+// payload functions follow
+
+char* prepareTestResponse() {
+  // init
+  StaticJsonBuffer<500> jsonBuffer;
+  JsonObject& root = jsonBuffer.createObject();
+
+  // set data
+  root["sensor"] = "gps";
+  root["time"] = 1351824120;
+  JsonArray& data = root.createNestedArray("data");
+  data.add(48.756080, 6);  // 6 is the number of decimals to print
+  data.add(2.302038, 6);   // if not specified, 2 digits are printed
+
+  // serialize
+  int len = root.measureLength();
+  char buffer[len];
+  root.printTo(buffer, len);
+  return buffer;
+}
+
+void testfunc(){
+  // parse json argument 0
+  String jsonText = server.arg(0);
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(json);
+  const char* sensor = root["sensor"];
+  long time          = root["time"];
+  double latitude    = root["data"][0];
+  double longitude   = root["data"][1];
+
+  // send json result data
+  server.send(200, "application/json", prepareTestResponse());
 }
 

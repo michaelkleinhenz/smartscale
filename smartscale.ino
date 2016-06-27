@@ -36,8 +36,8 @@ void setup() {
   setupLEDRing();
   Serial.println("Neopixels initialized..");  
   ledIndicateConnectToNetwork();
-  setupWifi();
-  Serial.println("Wifi initialized..");
+  //setupWifi();
+  //Serial.println("Wifi initialized..");
   setupScale();
   Serial.println("Scale initialized..");  
   setupService();
@@ -50,6 +50,7 @@ void setup() {
 static char outstr[15];
 
 void loop() {
+  loopButtons();
   loopService();
   dtostrf(getScaleValue(), 7, 2, outstr);
   displayText(outstr);

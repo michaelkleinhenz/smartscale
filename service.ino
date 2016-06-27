@@ -1,7 +1,7 @@
 #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
 
-ESP8266WebServer server ( 80 );
+ESP8266WebServer server(80);
 
 void handleNotFound() {
   String message = "File Not Found\n\n";
@@ -85,7 +85,7 @@ char* prepareTestResponse() {
 }
 
 void testfunc(){
-  // parse json argument 0
+  // parse POST argument 0 as json
   String jsonText = server.arg(0);
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(json);

@@ -47,6 +47,7 @@ void setupService() {
   server.on("/", handleRoot);
 
   // REST Service Endpoints follow
+  server.on("/value", HTTP_GET, returnScaleValue);    
   server.on("/test", HTTP_POST, []() {
     // no arguments, return error
     if(server.args() == 0) return server.send(500, "text/plain", "BAD ARGS");
@@ -64,6 +65,16 @@ void loopService(void) {
 }
 
 // payload functions follow
+
+void returnScaleValue() {
+  StaticJsonBuffer<50> jsonBuffer;
+  JsonObject& root = jsonBuffer.createObject();
+  root["value"] = getScaleValue();
+  int len = root.measureLength();
+  char buffer[len];
+  root.printTo(buffer, len);
+  server.send(200, "application/json", buffer);
+}
 
 char* prepareTestResponse() {
   // init
@@ -88,7 +99,7 @@ void testfunc(){
   // parse POST argument 0 as json
   String jsonText = server.arg(0);
   StaticJsonBuffer<200> jsonBuffer;
-  JsonObject& root = jsonBuffer.parseObject(json);
+  JsonObject& root = jsonBuffer.parseObject(jsonText);
   const char* sensor = root["sensor"];
   long time          = root["time"];
   double latitude    = root["data"][0];

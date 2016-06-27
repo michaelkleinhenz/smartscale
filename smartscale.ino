@@ -39,6 +39,9 @@ void setup() {
   setupWifi();
   Serial.println("Wifi initialized..");
   setupScale();
+  Serial.println("Scale initialized..");  
+  setupService();
+  Serial.println("Web Server initialized..");
   Serial.println("Smart Kitchen Scale ready.");
   ledStandby();
   Serial.println("Entering standby..");
@@ -47,6 +50,7 @@ void setup() {
 static char outstr[15];
 
 void loop() {
+  loopService();
   dtostrf(getScaleValue(), 7, 2, outstr);
   displayText(outstr);
   safeDelay(1000);

@@ -25,6 +25,8 @@
 #include<stdlib.h>
 #include <WiFiManager.h>
 
+static String localIp;
+
 void setup() {
   Serial.begin(115200);
   Serial.println("");  
@@ -37,7 +39,7 @@ void setup() {
   setupLEDRing();
   Serial.println("Neopixels initialized..");  
   ledIndicateConnectToNetwork();
-  //setupWifi();
+  setupWifi();
   //Serial.println("Wifi initialized..");
   setupScale();
   Serial.println("Scale initialized..");  
@@ -46,17 +48,20 @@ void setup() {
   Serial.println("Smart Kitchen Scale ready.");
   ledStandby();
   Serial.println("Entering standby..");
+
+  // default scale mode
+  displayWeightFrame();
 }
 
-static char outstr[15];
-
 void loop() {
+  // loop services
   loopButtons();
   loopService();
-  dtostrf(getScaleValue(), 7, 2, outstr);
-  displayText(outstr);
+
+  // default scale mode
+  displayWeight(getScaleValue());
   safeDelay(1000);
-  clearOLED();
+
   // You have to put a yield() in your main loop to 
   // allow the underlying operating system to work.
   ESP.wdtFeed();

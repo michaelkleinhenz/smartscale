@@ -10,15 +10,14 @@
 #include <ESP8266WebServer.h>
 
 void saveConfigCallback() {
-  clearOLED();
-  displayText("WiFi connected. IP: " + WiFi.localIP());
-  Serial.println("WiFi connected. IP: " + WiFi.localIP());
+  localIp = String(WiFi.localIP()[0])+"."+String(WiFi.localIP()[1])+"."+String(WiFi.localIP()[2])+"."+String(WiFi.localIP()[3]);
+  Serial.println("WiFi connected. IP: " + localIp);
+  displayNetworkInfo(localIp);
   ledIndicateConnectToNetworkSuccessful();
 }
 
 void configModeCallback (WiFiManager *myWiFiManager) {
-  clearOLED();
-  displayText("Entered config mode. Connect to: " + myWiFiManager->getConfigPortalSSID());
+  displayNetworkConfigMode(myWiFiManager->getConfigPortalSSID());
   Serial.println("Entered config mode");
   Serial.println(WiFi.softAPIP());
   // print the ssid that we should connect to to configure the ESP8266
@@ -28,13 +27,11 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 
 void setupWifi() {
   WiFiManager wifiManager;
-  displayText("Setting up WiFi..");
   Serial.print("Setting up WiFi..");
   wifiManager.setAPCallback(configModeCallback);
   wifiManager.setSaveConfigCallback(saveConfigCallback);  
-  if(!wifiManager.autoConnect("smartscale")) {
+  if(!wifiManager.autoConnect("scale1")) {
     clearOLED();
-    displayText("Connection Failed. Please reset.");
     Serial.println("failed to connect and hit timeout");
     //reset and try again, or maybe put it to deep sleep
     ESP.reset();

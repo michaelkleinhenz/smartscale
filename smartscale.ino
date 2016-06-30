@@ -15,6 +15,7 @@
  *    Adafruit Neopixel
  *    Adafruit SSD 1306
  *    WifiManager
+ *    Base64 (by Arturo Guadalupi, you may modify to remove the avr include)
  * Also, you'll need the ESP8266 integration for Arduino IDE
  * installed (see website for how to do that). You may need
  * to customize some libraries (the SSD 1306 library may need
@@ -39,7 +40,7 @@ void setup() {
   setupLEDRing();
   Serial.println("Neopixels initialized..");  
   ledIndicateConnectToNetwork();
-  setupWifi();
+  //setupWifi();
   //Serial.println("Wifi initialized..");
   setupScale();
   Serial.println("Scale initialized..");  

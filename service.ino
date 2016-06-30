@@ -1,5 +1,6 @@
 #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
+#include <Base64.h>
 
 ESP8266WebServer server(80);
 
@@ -42,16 +43,39 @@ void handleRoot() {
   server.send ( 200, "text/html", temp );
 }
 
+char* decodeImage(char inputString[], unsigned int inputStringLength) {
+  int decodedLength = Base64.decodedLength(inputString, inputStringLength);
+  char* decodedString = (char*)malloc(decodedLength);
+  Base64.decode(decodedString, inputString, inputStringLength);
+  Serial.printf("%s",decodedString); 
+  return decodedString;
+}
+
 void setupService() {
   server.on("/", handleRoot);
 
   // REST Service Endpoints follow
-  server.on("/value", HTTP_GET, returnScaleValue);    
-  server.on("/test", HTTP_POST, []() {
+
+  // /value returns the current scale value
+  server.on("/value", HTTP_GET, returnScaleValue);
+
+  // /status returns the current status (ex. in ingredient step, with amount)
+  server.on("/status", HTTP_GET, returnStatus);
+
+  // /showingredient shows an igredient step and performs actions
+  server.on("/showingredient", HTTP_POST, []() {
     // no arguments, return error
     if(server.args() == 0) return server.send(500, "text/plain", "BAD ARGS");
     // call payload function
-    testfunc();
+    showIngredient();
+  });
+
+  // /showmanual shows a manual step and performs actions (like "stirring", "add ice")
+  server.on("/showmanual", HTTP_POST, []() {
+    // no arguments, return error
+    if(server.args() == 0) return server.send(500, "text/plain", "BAD ARGS");
+    // call payload function
+    showManual();
   });
   
   server.onNotFound(handleNotFound);
@@ -64,16 +88,6 @@ void loopService(void) {
 }
 
 // payload functions follow
-
-void returnScaleValue() {
-  StaticJsonBuffer<50> jsonBuffer;
-  JsonObject& root = jsonBuffer.createObject();
-  root["value"] = getScaleValue();
-  int len = root.measureLength();
-  char buffer[len];
-  root.printTo(buffer, len);
-  server.send(200, "application/json", buffer);
-}
 
 char* prepareTestResponse() {
   // init
@@ -94,15 +108,65 @@ char* prepareTestResponse() {
   return buffer;
 }
 
-void testfunc(){
+void returnScaleValue() {
+  StaticJsonBuffer<50> jsonBuffer;
+  JsonObject& root = jsonBuffer.createObject();
+  root["value"] = getScaleValue();
+  int len = root.measureLength();
+  char buffer[len];
+  root.printTo(buffer, len);
+  server.send(200, "application/json", buffer);
+}
+
+void returnStatus() {
+  StaticJsonBuffer<50> jsonBuffer;
+  JsonObject& root = jsonBuffer.createObject();
+  root["value"] = getScaleValue();
+  int len = root.measureLength();
+  char buffer[len];
+  root.printTo(buffer, len);
+  server.send(200, "application/json", buffer);
+}
+
+void showIngredient(){
   // parse POST argument 0 as json
   String jsonText = server.arg(0);
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(jsonText);
-  const char* sensor = root["sensor"];
-  long time          = root["time"];
-  double latitude    = root["data"][0];
-  double longitude   = root["data"][1];
+  const char* statustext = root["statustext"];
+  const char* icon = root["icon"];
+  const char* name = root["name"];
+  int amount = root["amount"];
+  const char* unit = root["unit"];
+
+  // decoding icon
+  char* iconBitmap = decodeImage(const_cast<char*>(icon), sizeof(const_cast<char*>(icon)));
+
+  // TODO FIXME
+
+  // finally releasing icon memory
+  free(iconBitmap);
+
+  // send json result data
+  server.send(200, "application/json", prepareTestResponse());
+}
+
+void showManual(){
+  // parse POST argument 0 as json
+  String jsonText = server.arg(0);
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(jsonText);
+  const char* statustext = root["statustext"];
+  const char* icon = root["icon"];
+  const char* instructions = root["name"];
+
+  // decoding icon
+  char* iconBitmap = decodeImage(const_cast<char*>(icon), sizeof(const_cast<char*>(icon)));
+
+  // TODO FIXME
+
+  // finally releasing icon memory
+  free(iconBitmap);
 
   // send json result data
   server.send(200, "application/json", prepareTestResponse());

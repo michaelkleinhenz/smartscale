@@ -8,7 +8,6 @@ void setupButtons() {
 }
 
 void loopButtons() {
-  Serial.println(digitalRead(D3));
   if (digitalRead(2)==HIGH) {
     tsButton1 = millis();
   }else
